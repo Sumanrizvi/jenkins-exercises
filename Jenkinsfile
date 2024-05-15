@@ -43,10 +43,10 @@ pipeline {
         stage("commit version udpate") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: "GitHub-Creds", usernameVariable: "USER", passwordVariable: "PASS")]) {
+                    withCredentials([string(credentialsId: "github-auth-token", variable: "TOKEN")]) {
                         sh 'git config --global user.email "sumanrizvi@gmail.com"'
                         sh 'git config --global user.name "sumanrizvi"'
-                        sh "git remote set-url origin https://$USER:$PASS@github.com/sumanrizvi/jenkins-exercises.git"
+                        sh "git remote set-url origin https://github.com/sumanrizvi/jenkins-exercises.git"
                         sh 'git add .'
                         sh 'git commit -m "ci: version bump"'
                         sh 'git push origin HEAD'
