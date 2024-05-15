@@ -2,7 +2,7 @@
 pipeline {
     agent any
     tools {
-        nodejs "my-nodejs"
+        nodejs "node"
     }
     stages {
         stage("increment version") {
@@ -32,7 +32,7 @@ pipeline {
         stage("build and push docker image") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     sh "docker build -t sumanrizvi/jenkins-exercises:${IMAGE_NAME} ."
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
                     sh "docker push sumanrizvi/jenkins-exercises:${IMAGE_NAME}"
@@ -43,10 +43,10 @@ pipeline {
         stage("commit version udpate") {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: "github-creds", usernameVariable: "USER", passwordVariable: "PASS")]) {
+                    withCredentials([usernamePassword(credentialsId: "GitHub-Creds", usernameVariable: "USER", passwordVariable: "PASS")]) {
                         sh 'git config --global user.email "jenkins@example.com"'
                         sh 'git config --global user.name "jenkins"'
-                        sh "git remote set-url origin https://$USER:'$PASS'@github.com/Sumanrizvi/jenkins-exercises.git"
+                        sh "git remote set-url origin https://$USER:$PASS@github.com/Sumanrizvi/jenkins-exercises.git"
                         sh 'git add .'
                         sh 'git commit -m "ci: version bump"'
                         sh 'git push origin HEAD'
